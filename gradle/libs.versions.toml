@@ -1,0 +1,159 @@
+[versions]
+# plugin
+plugin-gradle-android = "8.5.0"
+plugin-ben-manes = "0.51.0"
+plugin-google-services = "4.4.2"
+plugin-firebase-crashlytics = "3.0.2"
+plugin-ksp = "2.0.0-1.0.22"
+# project
+version = "1"
+version-name = "1.0.0"
+build-tools-version = "34.0.0"
+sdk-min = "26"
+sdk-compile = "34"
+sdk-compile-extension = "12" # for compileSdk 34
+sdk-target = "34"
+jvm-target = "17"
+jvm-target-kotlin = "17"
+# kotlin
+kotlin = "2.0.0"
+kotlin-atomic = "0.24.0"
+kotlin-coroutines = "1.9.0-RC"
+kotlin-immutable-collections = "0.3.7"
+kotlin-serialization-json = "1.7.0"
+
+# jetpack
+jetpack-core = "1.13.1"
+jetpack-activity = "1.9.0"
+jetpack-annotation = "1.8.0"
+jetpack-appcompat = "1.7.0"
+jetpack-lifecycle = "2.8.2"
+jetpack-splash = "1.0.1"
+# compose
+compose-bom = "2024.06.00"
+compose-activity = "1.9.0"
+
+## frameworks
+# firebase
+firebase-bom = "33.1.1"
+# database
+room = "2.6.1"
+# di
+di-hilt = "2.51.1"
+di-hilt-navigation-compose = "1.2.0"
+# utils
+jdk-desugar = "2.0.4"
+leakcanary = "2.14"
+timber = "5.0.1"
+
+[libraries]
+
+# kotlin
+kotlin-bom = { module = "org.jetbrains.kotlin:kotlin-bom", version.ref = "kotlin" }
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib" }
+kotlin-atomic = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "kotlin-atomic" }
+kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
+kotlin-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlin-coroutines" }
+kotlin-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlin-coroutines" }
+kotlin-immutable-collections = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlin-immutable-collections" }
+kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlin-serialization-json" }
+
+# jetpack
+jetpack-core = { module = "androidx.core:core-ktx", version.ref = "jetpack-core" }
+jetpack-activity = { module = "androidx.activity:activity", version.ref = "jetpack-activity" }
+jetpack-annotation = { module = "androidx.annotation:annotation", version.ref = "jetpack-annotation" }
+jetpack-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "jetpack-appcompat" }
+jetpack-common = { module = "androidx.lifecycle:lifecycle-common-java8", version.ref = "jetpack-lifecycle" }
+jetpack-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "jetpack-lifecycle" }
+jetpack-splash = { module = "androidx.core:core-splashscreen", version.ref = "jetpack-splash" }
+jetpack-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "jetpack-lifecycle" }
+jetpack-viewmodel-savedstate = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "jetpack-lifecycle" }
+# compose
+compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
+compose-foundation = { module = "androidx.compose.foundation:foundation" }
+compose-ui = { module = "androidx.compose.ui:ui" }
+compose-material3 = { module = "androidx.compose.material3:material3" }
+compose-tooling = { module = "androidx.compose.ui:ui-tooling" }
+compose-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+compose-activity = { module = "androidx.activity:activity-compose", version.ref = "compose-activity" }
+
+# firebase
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
+firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
+firebase-config = { module = "com.google.firebase:firebase-config" }
+# database
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+# di
+di-hilt = { module = "com.google.dagger:hilt-android", version.ref = "di-hilt" }
+di-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "di-hilt-navigation-compose" }
+di-hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "di-hilt" }
+# util
+jdk-desugar = { module = "com.android.tools:desugar_jdk_libs", version.ref = "jdk-desugar" }
+leakcanary = { module = "com.squareup.leakcanary:plumber-android", version.ref = "leakcanary" }
+leakcanary-debug = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "plugin-gradle-android" }
+ben-manes = { id = "com.github.ben-manes.versions", version.ref = "plugin-ben-manes" }
+di-hilt = { id = "com.google.dagger.hilt.android", version.ref = "di-hilt" }
+google-services = { id = "com.google.gms.google-services", version.ref = "plugin-google-services" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "plugin-firebase-crashlytics" }
+room = { id = "androidx.room", version.ref = "room" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "plugin-ksp" }
+
+[bundles]
+
+# kotlin
+kotlin-bom = ["kotlin-stdlib"]
+kotlin-common = [
+    "kotlin-atomic",
+    "kotlin-immutable-collections",
+    "kotlin-serialization-json",
+]
+
+# ui
+common = [
+    "jetpack-annotation",
+    "jetpack-appcompat",
+    "jetpack-core",
+    "jetpack-common",
+    "jetpack-viewmodel",
+    "jetpack-viewmodel-savedstate",
+    "jetpack-runtime",
+]
+ui = [
+    "jetpack-activity",
+    "jetpack-splash",
+]
+
+# compose
+compose = [
+    "compose-activity",
+    "compose-foundation",
+    "compose-material3",
+    "compose-ui",
+    "compose-tooling-preview",
+]
+
+# framework
+firebase-bom = [
+    "firebase-analytics",
+    "firebase-crashlytics",
+    "firebase-config",
+]
+database = ["room-runtime"]
+database-compiler = ["room-compiler"]
+di = ["di-hilt", "di-hilt-navigation-compose"]
+di-compiler = ["di-hilt-compiler"]
+multithreading = [
+    "kotlin-coroutines",
+    "kotlin-coroutines-android",
+    "kotlin-coroutines-play-services",
+]
