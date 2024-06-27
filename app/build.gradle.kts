@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.di.hilt)
+    alias(libs.plugins.kotlin.allopen)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.kotlin.serialization)
@@ -32,6 +33,15 @@ android {
         }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // TODO add certificates
+        buildConfigField(
+            "String[]",
+            "CERTIFICATE_ARR",
+            "{${wrap("")}," +
+                "${wrap("")}," +
+                "${wrap("")}}",
+        )
     }
 
     buildTypes {
@@ -83,6 +93,16 @@ android {
     }
 }
 
+private fun wrap(str: String) = "\"$str\""
+
+tasks.withType(Test::class) {
+    allOpen {
+        annotation("androidx.annotation.OpenForTesting")
+    }
+
+    testLogging { setExceptionFormat("full") }
+}
+
 dependencies {
     // Kotlin
     implementation(platform(libs.kotlin.bom))
@@ -105,6 +125,7 @@ dependencies {
     // Framework
     implementation(libs.bundles.di)
     ksp(libs.bundles.database.compiler)
+    implementation(libs.bundles.network)
     implementation(libs.bundles.database)
     ksp(libs.bundles.di.compiler)
     implementation(libs.bundles.multithreading)
@@ -114,4 +135,7 @@ dependencies {
     implementation(libs.leakcanary)
     debugImplementation(libs.leakcanary.debug)
     implementation(libs.timber)
+
+    // test
+    testImplementation(libs.bundles.test)
 }
