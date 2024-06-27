@@ -1,6 +1,8 @@
 package ua.testtask.currencyexchanger
 
 import android.app.Application
+import androidx.annotation.OpenForTesting
+import androidx.annotation.VisibleForTesting
 import com.google.firebase.Firebase
 import com.google.firebase.crashlytics.crashlytics
 import dagger.hilt.android.HiltAndroidApp
@@ -8,7 +10,8 @@ import timber.log.Timber
 import ua.testtask.currencyexchanger.util.logger.CrashlyticsTree
 import ua.testtask.currencyexchanger.util.logger.TagDebugTree
 
-@HiltAndroidApp class App : Application() {
+@OpenForTesting @HiltAndroidApp
+class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
@@ -17,7 +20,9 @@ import ua.testtask.currencyexchanger.util.logger.TagDebugTree
         initFirebase()
     }
 
-    private fun setupTimber() {
+    @OpenForTesting
+    @VisibleForTesting
+    fun setupTimber() {
         if (BuildConfig.DEBUG) {
             Timber.plant(CrashlyticsTree(), TagDebugTree())
         } else {
@@ -27,7 +32,9 @@ import ua.testtask.currencyexchanger.util.logger.TagDebugTree
         Timber.i("Application.onCreate")
     }
 
-    private fun initFirebase() {
+    @OpenForTesting
+    @VisibleForTesting
+    fun initFirebase() {
         Firebase.crashlytics.setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG)
         Firebase.crashlytics.setCustomKey("DEBUG", BuildConfig.DEBUG)
     }
