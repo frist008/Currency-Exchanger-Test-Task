@@ -2,4 +2,16 @@
 
     <string name="app_name">Currency Exchanger</string>
 
+    <!-- Main -->
+
+    <string name="main_title">Currency converter</string>
+    <string name="main_balance_title">MY BALANCES</string>
+    <string name="main_balance_value_pattern">%1$.02f %2$s</string>
+    <string name="main_exchange_title">CURRENCY EXCHANGE</string>
+    <string name="main_exchange_sell">Sell</string>
+    <string name="main_exchange_receive">Receive</string>
+    <string name="main_exchange_value_pattern">%1$.02f</string>
+    <string name="main_exchange_value_plus_pattern">+%1$.02f</string>
+    <string name="main_action_button">SUBMIT</string>
+
 </resources>

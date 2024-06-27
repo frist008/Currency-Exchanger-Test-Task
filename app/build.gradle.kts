@@ -34,13 +34,12 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // TODO add certificates
         buildConfigField(
             "String[]",
             "CERTIFICATE_ARR",
-            "{${wrap("")}," +
-                "${wrap("")}," +
-                "${wrap("")}}",
+            "{${wrap("sha256/q1yIuzIjaZZgFypWeK+np1J1Bb1Rxa7cyqllwfX0w54=")}," +
+                "${wrap("sha256/4a6cPehI7OG6cuDZka5NDZ7FR8a60d3auda+sKfg4Ng=")}," +
+                "${wrap("sha256/x4QzPSC810K5/cMjb05Qm4k3Bw5zBn4lTdO/nEW/Td4=")}}",
         )
     }
 

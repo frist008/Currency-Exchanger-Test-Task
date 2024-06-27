@@ -45,10 +45,10 @@ class AppApiWrapper @Inject constructor(
 
     private suspend fun getApi(): AppApi? =
         api ?: runCatching {
-            val getDomainName = getDomainName()
-            val domain = "https://$getDomainName/tasks/api/"
+            val domainName = getDomainName()
+            val domain = "https://$domainName/tasks/api/"
             val api = Retrofit.Builder()
-                .client(NetworkClient(domain).client)
+                .client(NetworkClient(domainName).client)
                 .addConverterFactory(converterFactory)
                 .baseUrl(domain)
                 .build()

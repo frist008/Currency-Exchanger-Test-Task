@@ -24,6 +24,7 @@ import ua.testtask.currencyexchanger.data.database.entity.WalletDBO
 import ua.testtask.currencyexchanger.data.network.api.AppApi
 import ua.testtask.currencyexchanger.data.network.entity.CurrencyDTO
 import ua.testtask.currencyexchanger.data.repository.CurrencyRepository
+import ua.testtask.currencyexchanger.domain.entity.WalletDomainEntity
 import ua.testtask.currencyexchanger.domain.entity.exception.IncorrectBalanceException
 import ua.testtask.currencyexchanger.util.TestConfig
 
@@ -43,7 +44,7 @@ import ua.testtask.currencyexchanger.util.TestConfig
     private val mockCurrencyName2 = "UAH"
     private val mockCurrencyValue2 = 3f
     private val mockDto = CurrencyDTO(
-        base = CurrencyDTO.DEFAULT_BASE_CURRENCY,
+        base = WalletDomainEntity.DEFAULT_BASE_CURRENCY,
         rateMap = mapOf(
             mockCurrencyName1 to mockCurrencyValue1,
             mockCurrencyName2 to mockCurrencyValue2,
@@ -51,7 +52,7 @@ import ua.testtask.currencyexchanger.util.TestConfig
     )
     private val mockDomainDtoMap = mockDto.toDomainMap()
     private val mockWalletDBO0 =
-        WalletDBO(id = 1, name = CurrencyDTO.DEFAULT_BASE_CURRENCY, balance = 100f)
+        WalletDBO(id = 1, name = WalletDomainEntity.DEFAULT_BASE_CURRENCY, balance = 100f)
     private val mockWalletDBO1 = WalletDBO(id = 2, name = mockCurrencyName1, balance = 200f)
     private val mockWalletDBO2 = WalletDBO(id = 3, name = mockCurrencyName2, balance = 300f)
     private val mockWalletDomainEntity0 = mockWalletDBO0.toDomainEntity()

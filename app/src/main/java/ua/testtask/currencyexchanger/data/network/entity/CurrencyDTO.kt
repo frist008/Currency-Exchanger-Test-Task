@@ -19,13 +19,23 @@ import java.util.Locale
             emptyList()
         } else {
             val locale = Locale.getDefault()
+            val newBaseName = base.uppercase(locale)
             rateMap
                 .keys
                 .asSequence()
-                .plus(base)
-                .map { it.uppercase(locale) }
-                .distinct()
-                .map { WalletDBO(name = it) }
+                .map {
+                    val newName = it.uppercase(locale)
+                    if (newName == newBaseName) {
+                        WalletDBO(
+                            name = it.uppercase(locale),
+                            balance = 1000f,
+                        )
+                    } else {
+                        WalletDBO(name = it.uppercase(locale))
+                    }
+                }
+                .plus(WalletDBO(name = newBaseName, balance = 1000f))
+                .distinctBy(WalletDBO::name)
                 .toList()
         }
 
@@ -42,8 +52,4 @@ import java.util.Locale
                 )
             }
         }
-
-    companion object {
-        const val DEFAULT_BASE_CURRENCY = "EUR"
-    }
 }
