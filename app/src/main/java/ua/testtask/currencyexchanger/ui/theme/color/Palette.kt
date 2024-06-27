@@ -7,9 +7,10 @@ import androidx.compose.ui.graphics.Color
 
     val TRANSPARENT = Color(0x00000000)
 
-    val WHITE = Color(0xFFFFFFFF)
+    const val WHITE_LONG = 0xFFFFFFFF
+    val WHITE = Color(WHITE_LONG)
 
-    val BLACK = Color(0xFF111928)
+    val BLACK_DARK = Color(0xFF111928)
     val BLACK_LIGHT = Color(0xFF1f2a37)
 
     val GRAY = Color(0xFF6b7280)

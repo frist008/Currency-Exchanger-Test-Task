@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import ua.frist008.action.record.ui.entity.base.UIState
+import ua.testtask.currencyexchanger.ui.entity.base.UIState
 import kotlin.coroutines.CoroutineContext
 
 abstract class BaseViewModel : ViewModel() {

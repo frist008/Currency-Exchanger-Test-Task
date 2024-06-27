@@ -6,7 +6,7 @@ import ua.testtask.currencyexchanger.domain.entity.WalletDomainEntity
 
 interface CurrencyRepository {
 
-    suspend fun getWallets(): Flow<List<WalletDomainEntity>>
+    fun getWallets(): Flow<List<WalletDomainEntity>>
 
     suspend fun getPriceOfCurrencies(baseCurrency: String? = null): Map<String, CurrencyDomainEntity>
 

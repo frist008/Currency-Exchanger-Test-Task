@@ -1,4 +1,4 @@
-package ua.frist008.action.record.ui.entity.base
+package ua.testtask.currencyexchanger.ui.entity.base
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable

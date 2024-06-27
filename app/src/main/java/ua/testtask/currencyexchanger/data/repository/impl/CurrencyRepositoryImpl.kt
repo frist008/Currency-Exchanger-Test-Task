@@ -8,7 +8,6 @@ import kotlinx.coroutines.launch
 import ua.testtask.currencyexchanger.data.database.dao.WalletDAO
 import ua.testtask.currencyexchanger.data.database.entity.WalletDBO
 import ua.testtask.currencyexchanger.data.network.api.AppApi
-import ua.testtask.currencyexchanger.data.network.entity.CurrencyDTO
 import ua.testtask.currencyexchanger.data.repository.CurrencyRepository
 import ua.testtask.currencyexchanger.domain.entity.CurrencyDomainEntity
 import ua.testtask.currencyexchanger.domain.entity.WalletDomainEntity
@@ -23,15 +22,15 @@ class CurrencyRepositoryImpl @Inject constructor(
 ) : CurrencyRepository {
 
     // In an ideal world this is stored on the server
-    override suspend fun getWallets(): Flow<List<WalletDomainEntity>> =
+    override fun getWallets(): Flow<List<WalletDomainEntity>> =
         walletDAO.getAll().map { list -> list.map(WalletDBO::toDomainEntity) }
 
     override suspend fun getPriceOfCurrencies(baseCurrency: String?): Map<String, CurrencyDomainEntity> {
         // Uncomment in ideal world
         // val baseCurrency =
         when (baseCurrency) {
-            null -> CurrencyDTO.DEFAULT_BASE_CURRENCY
-            CurrencyDTO.DEFAULT_BASE_CURRENCY -> CurrencyDTO.DEFAULT_BASE_CURRENCY
+            null -> WalletDomainEntity.DEFAULT_BASE_CURRENCY
+            WalletDomainEntity.DEFAULT_BASE_CURRENCY -> WalletDomainEntity.DEFAULT_BASE_CURRENCY
             else -> throw UnsupportedOperationException()
         }
 
@@ -61,12 +60,12 @@ class CurrencyRepositoryImpl @Inject constructor(
         }
 
         val newTarget = when {
-            base.name == CurrencyDTO.DEFAULT_BASE_CURRENCY -> {
+            base.name == WalletDomainEntity.DEFAULT_BASE_CURRENCY -> {
                 val buyPrice = getPriceOfCurrency(target.name).buyPrice
                 target.copy(balance = target.balance + sum * buyPrice)
             }
 
-            target.name == CurrencyDTO.DEFAULT_BASE_CURRENCY -> {
+            target.name == WalletDomainEntity.DEFAULT_BASE_CURRENCY -> {
                 val sellPrice = getPriceOfCurrency(base.name).sellPrice
                 target.copy(balance = target.balance + sum / sellPrice)
             }
