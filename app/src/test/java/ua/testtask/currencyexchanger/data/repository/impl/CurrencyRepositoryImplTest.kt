@@ -26,6 +26,7 @@ import ua.testtask.currencyexchanger.data.database.entity.WalletDBO
 import ua.testtask.currencyexchanger.data.network.api.AppApi
 import ua.testtask.currencyexchanger.data.network.entity.CurrencyDTO
 import ua.testtask.currencyexchanger.data.repository.CurrencyRepository
+import ua.testtask.currencyexchanger.data.source.TaxStore
 import ua.testtask.currencyexchanger.domain.entity.WalletEntity
 import ua.testtask.currencyexchanger.util.TestConfig
 
@@ -40,6 +41,7 @@ class CurrencyRepositoryImplTest {
 
     private val appApi: AppApi = mockk()
     private val walletDAO: WalletDAO = mockk()
+    private val taxStore: TaxStore = mockk()
 
     private val mockCurrencyName1 = "USD"
     private val mockCurrencyValue1 = 2f
@@ -63,6 +65,7 @@ class CurrencyRepositoryImplTest {
         testClass = CurrencyRepositoryImpl(
             api = appApi,
             walletDAO = walletDAO,
+            taxStore = taxStore,
         )
     }
 
@@ -105,6 +108,14 @@ class CurrencyRepositoryImplTest {
             assertEquals(mockCurrencyValue2, result[mockCurrencyName2]?.sellPrice)
             assertEquals(mockCurrencyValue2, result[mockCurrencyName2]?.buyPrice)
 
+            val result2 = testClass.getPriceOfCurrencies().first()
+            assertTrue(result.all { original -> result2.any { original == it } })
+
+            confirmVerified(walletDAO)
+
+            coEvery { walletDAO.insertAll(dboList) } just runs
+            testClass.getPriceOfCurrencies().first()
+            coVerify { walletDAO.insertAll(dboList) }
             confirmVerified(walletDAO)
         }
     }

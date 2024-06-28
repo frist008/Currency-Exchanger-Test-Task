@@ -30,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.PersistentList
@@ -202,6 +203,8 @@ private fun PopupGrid(
 
 @Composable
 private fun ColumnScope.MainFooterComponent(isError: Boolean, onSubmitClicked: () -> Unit) {
+    val focusManager = LocalFocusManager.current
+
     Spacer(
         modifier = Modifier
             .fillMaxHeight()
@@ -214,7 +217,10 @@ private fun ColumnScope.MainFooterComponent(isError: Boolean, onSubmitClicked: (
             .padding(horizontal = 32.dp),
         isEnabled = !isError,
         textRes = R.string.main_action_button,
-        onClick = onSubmitClicked,
+        onClick = {
+            focusManager.clearFocus()
+            onSubmitClicked()
+        },
     )
 }
 

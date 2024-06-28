@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
@@ -35,6 +36,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
@@ -201,13 +203,18 @@ private fun ExchangeItemCurrency(
     onSelectCurrencyClicked: () -> Unit,
 ) {
     val layoutPadding = (horizontalPadding / 2)
+    val focusManager = LocalFocusManager.current
 
     Row(
         modifier = Modifier
             .padding(horizontal = layoutPadding)
             .clip(CircleShape)
-            .clickable(onClick = onSelectCurrencyClicked)
-            .padding(layoutPadding),
+            .clickable {
+                focusManager.clearFocus()
+                onSelectCurrencyClicked()
+            }
+            .padding(layoutPadding)
+            .focusable(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
