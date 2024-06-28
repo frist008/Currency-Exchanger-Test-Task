@@ -4,15 +4,15 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import ua.testtask.currencyexchanger.data.repository.CurrencyRepository
-import ua.testtask.currencyexchanger.data.repository.impl.CurrencyRepositoryImpl
+import ua.testtask.currencyexchanger.data.source.TaxStore
+import ua.testtask.currencyexchanger.data.source.impl.TaxStoreImpl
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-interface RepositoryModule {
+interface DataStoreModule {
 
     @Binds
     @Singleton
-    fun bindCurrencyRepository(repository: CurrencyRepositoryImpl): CurrencyRepository
+    fun bindTexStore(repository: TaxStoreImpl): TaxStore
 }

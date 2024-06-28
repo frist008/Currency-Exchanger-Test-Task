@@ -13,5 +13,7 @@ interface CurrencyRepository {
         force: Boolean = false,
     ): Flow<Map<String, CurrencyDomainEntity>>
 
-    suspend fun updateWallet(base: WalletDomainEntity, target: WalletDomainEntity)
+    suspend fun updateWallet(base: WalletDomainEntity, target: WalletDomainEntity): Float
+
+    fun getTaxCoefficient(): Float
 }

@@ -10,7 +10,7 @@ class UpdateWalletUseCase @Inject constructor(
     private val calculateBalanceUseCase: CalculateBalanceUseCase,
 ) {
 
-    suspend fun invoke(base: WalletDomainEntity, target: WalletDomainEntity, sum: Float) {
+    suspend fun invoke(base: WalletDomainEntity, target: WalletDomainEntity, sum: Float): Float {
         val newBase = base.copy(balance = base.balance - sum)
 
         if (newBase.balance < 0) {
@@ -21,6 +21,6 @@ class UpdateWalletUseCase @Inject constructor(
             balance = target.balance + calculateBalanceUseCase.calc(base, target, sum),
         )
 
-        repository.updateWallet(newBase, newTarget)
+        return repository.updateWallet(newBase, newTarget) * sum
     }
 }

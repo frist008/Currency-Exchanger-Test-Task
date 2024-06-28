@@ -7,6 +7,7 @@ import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -16,11 +17,13 @@ import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
 import ua.testtask.currencyexchanger.data.repository.CurrencyRepository
 import ua.testtask.currencyexchanger.domain.usecase.CalculateBalanceUseCase
+import ua.testtask.currencyexchanger.domain.usecase.SyncCurrenciesUseCase
 import ua.testtask.currencyexchanger.domain.usecase.UpdateWalletUseCase
 import ua.testtask.currencyexchanger.ui.entity.base.UIState
 import ua.testtask.currencyexchanger.ui.entity.main.MainProgressState
 import ua.testtask.currencyexchanger.ui.entity.main.MainSuccessState
 import ua.testtask.currencyexchanger.ui.entity.main.dialog.MainSubmitDialogState
+import ua.testtask.currencyexchanger.ui.entity.main.dialog.MainSubmitWithCommissionDialogState
 import ua.testtask.currencyexchanger.ui.entity.main.entity.ExchangeTransactionUIEntity
 import ua.testtask.currencyexchanger.ui.entity.main.entity.ExchangeUIEntity
 import ua.testtask.currencyexchanger.ui.entity.main.entity.WalletUIEntity
@@ -31,56 +34,75 @@ import javax.inject.Inject
 @HiltViewModel class MainViewModel @Inject constructor(
     private val repository: CurrencyRepository,
     private val calculateBalanceUseCase: CalculateBalanceUseCase,
+    private val syncCurrenciesUseCase: SyncCurrenciesUseCase,
     private val updateWalletUseCase: UpdateWalletUseCase,
     private val walletToExchangeUIMapper: WalletDomainToExchangeUIMapper,
     private val walletToUIMapper: WalletToUIMapper,
 ) : BaseViewModel() {
 
+    private var listenTickerUpdateJob = atomic<Job?>(null)
     private var listenChangesJob = atomic<Job?>(null)
 
     private val exchangeTransactionState = MutableStateFlow<ExchangeTransactionUIEntity?>(null)
-    private val walletsFlow = repository.getWallets().distinctUntilChanged().onEach { wallets ->
-        val oldExchanges = exchangeTransactionState.value
-
-        if (oldExchanges == null) {
-            val sellWallet = wallets.firstOrNull { it.isDefaultWallet() } ?: return@onEach
-            val receiveWallet = wallets.firstOrNull { !it.isDefaultWallet() } ?: return@onEach
-            exchangeTransactionState.emit(
-                ExchangeTransactionUIEntity(
-                    sell = walletToExchangeUIMapper(entity = sellWallet, isSell = true),
-                    receive = walletToExchangeUIMapper(entity = receiveWallet, isSell = false),
-                ),
-            )
-        } else {
-            val sellWallet = wallets.firstOrNull { it.id == oldExchanges.sell.walletEntity.id }
-                ?: wallets.firstOrNull { it.isDefaultWallet() }
-                ?: return@onEach
-            val receiveWallet =
-                wallets.firstOrNull { it.id == oldExchanges.receive.walletEntity.id }
-                    ?: wallets.firstOrNull { !it.isDefaultWallet() }
-                    ?: return@onEach
-            exchangeTransactionState.emit(
-                oldExchanges.copy(
-                    sell = oldExchanges.sell.copy(
-                        walletEntity = walletToUIMapper(sellWallet),
-                        maxBalance = sellWallet.balance,
-                    ),
-                    receive = oldExchanges.receive.copy(
-                        walletEntity = walletToUIMapper(receiveWallet),
-                    ),
-                ),
-            )
+    private val walletsFlow = repository
+        .getWallets()
+        .distinctUntilChanged { oldList, newList ->
+            oldList.size == newList.size
+                && oldList.all { old ->
+                newList.any { new -> old == new }
+            }
         }
-    }.map { list ->
-        list.sortedByDescending { wallet -> wallet.balance }
-    }
+        .onEach { wallets ->
+            val oldExchanges = exchangeTransactionState.value
+
+            if (oldExchanges == null) {
+                val sellWallet = wallets.firstOrNull { it.isDefaultWallet() } ?: return@onEach
+                val receiveWallet = wallets.firstOrNull { !it.isDefaultWallet() } ?: return@onEach
+                exchangeTransactionState.emit(
+                    ExchangeTransactionUIEntity(
+                        sell = walletToExchangeUIMapper(entity = sellWallet, isSell = true),
+                        receive = walletToExchangeUIMapper(entity = receiveWallet, isSell = false),
+                    ),
+                )
+            } else {
+                val sellWallet = wallets.firstOrNull { it.id == oldExchanges.sell.walletEntity.id }
+                    ?: wallets.firstOrNull { it.isDefaultWallet() }
+                    ?: return@onEach
+                val receiveWallet =
+                    wallets.firstOrNull { it.id == oldExchanges.receive.walletEntity.id }
+                        ?: wallets.firstOrNull { !it.isDefaultWallet() }
+                        ?: return@onEach
+                val newSellWallet = walletToUIMapper(sellWallet)
+                val newReceiveWallet = walletToUIMapper(receiveWallet)
+
+                exchangeTransactionState.emit(
+                    oldExchanges.copy(
+                        sell = oldExchanges.sell.copy(
+                            walletEntity = newSellWallet,
+                            maxBalance = sellWallet.balance,
+                        ),
+                        receive = oldExchanges.receive.copy(
+                            exchangeValue = calculateBalanceUseCase.calc(
+                                base = newSellWallet,
+                                target = newReceiveWallet,
+                                sum = oldExchanges.sell.exchangeValue,
+                            ),
+                            walletEntity = newReceiveWallet,
+                        ),
+                    ),
+                )
+            }
+        }.map { list ->
+            list.sortedByDescending { wallet -> wallet.balance }
+        }
 
     fun listenChanges() {
         listenChangesJob.getAndUpdate { oldJob ->
             oldJob?.cancel()
 
-            launch {
-                repository.getPriceOfCurrencies() // TODO add logic with ticker
+            listenTickerUpdateJob.getAndUpdate {
+                it?.cancel()
+                launch { syncCurrenciesUseCase().collect() }
             }
 
             launch {
@@ -89,7 +111,8 @@ import javax.inject.Inject
                     exchangeTransactionState.filterNotNull(),
                 ) { wallets, exchangeTransactionEntity ->
                     MainSuccessState(
-                        walletList = wallets.asSequence().map(walletToUIMapper).toPersistentList(),
+                        walletList = wallets.asSequence().map(walletToUIMapper)
+                            .toPersistentList(),
                         exchangeTransactionEntity = exchangeTransactionEntity,
                         isError = !exchangeTransactionEntity.isEnoughToExchange(),
                     )
@@ -214,18 +237,28 @@ import javax.inject.Inject
         launch {
             mutableState.emit(MainProgressState)
             val oldExchangeTransaction = exchangeTransactionState.value ?: return@launch
-            updateWalletUseCase.invoke(
+            val sumOfTax = updateWalletUseCase.invoke(
                 base = oldExchangeTransaction.sell.walletEntity.toDomain(),
                 target = oldExchangeTransaction.receive.walletEntity.toDomain(),
                 sum = oldExchangeTransaction.sell.exchangeValue,
             )
             alertDialogMutableState.emit(
-                MainSubmitDialogState(
-                    oldExchangeTransaction.sell.exchangeValue,
-                    oldExchangeTransaction.sell.walletEntity.name,
-                    oldExchangeTransaction.receive.exchangeValue,
-                    oldExchangeTransaction.receive.walletEntity.name,
-                ),
+                if (sumOfTax > 0) {
+                    MainSubmitWithCommissionDialogState(
+                        oldExchangeTransaction.sell.exchangeValue,
+                        oldExchangeTransaction.sell.walletEntity.name,
+                        oldExchangeTransaction.receive.exchangeValue,
+                        oldExchangeTransaction.receive.walletEntity.name,
+                        sumOfTax,
+                    )
+                } else {
+                    MainSubmitDialogState(
+                        oldExchangeTransaction.sell.exchangeValue,
+                        oldExchangeTransaction.sell.walletEntity.name,
+                        oldExchangeTransaction.receive.exchangeValue,
+                        oldExchangeTransaction.receive.walletEntity.name,
+                    )
+                },
             )
         }
     }
