@@ -9,6 +9,7 @@ import ua.testtask.currencyexchanger.R
 import ua.testtask.currencyexchanger.presentation.base.MainViewModel
 import ua.testtask.currencyexchanger.ui.component.root.DefaultScaffold
 import ua.testtask.currencyexchanger.ui.entity.base.UIState
+import ua.testtask.currencyexchanger.ui.entity.main.MainProgressState
 import ua.testtask.currencyexchanger.ui.entity.main.MainSuccessState
 import ua.testtask.currencyexchanger.util.exception.unsupportedUI
 
@@ -22,28 +23,21 @@ import ua.testtask.currencyexchanger.util.exception.unsupportedUI
     innerPadding: PaddingValues,
     viewModel: MainViewModel = hiltViewModel(),
 ) {
+    val alertDialogState by viewModel.alertDialogState.collectAsState()
     val state by viewModel.state.collectAsState()
 
     when (val currentState = state) {
         is MainSuccessState -> MainSuccessScreen(
-            mainSuccessState = currentState,
             innerPadding = innerPadding,
-            sellItemClicked = {
-                viewModel.onSellItemClicked(currentState)
-            },
-            receiveItemClicked = {
-                viewModel.onReceiveItemClicked(currentState)
-            },
-            sellSelectCurrencyClicked = {
-                viewModel.onSellSelectCurrencyClicked(currentState)
-            },
-            receiveSelectCurrencyClicked = {
-                viewModel.onReceiveSelectCurrencyClicked(currentState)
-            },
-            submitClicked = {
-                viewModel.onSubmitClicked(currentState)
-            },
+            mainSuccessState = currentState,
+            onSellValueChanged = viewModel::onSellValueChanged,
+            onReceiveValueChanged = viewModel::onReceiveValueChanged,
+            onSellNewCurrencySelected = viewModel::onSellNewCurrencySelected,
+            onReceiveNewCurrencySelected = viewModel::onReceiveNewCurrencySelected,
+            onSubmitClicked = viewModel::onSubmitClicked,
         )
+
+        is MainProgressState -> MainLoadingScreen(innerPadding)
 
         is UIState.Error,
         is UIState.Progress,
@@ -54,4 +48,6 @@ import ua.testtask.currencyexchanger.util.exception.unsupportedUI
 
         else -> unsupportedUI()
     }
+
+    MainDialog(alertDialogState) { viewModel.onDismissDialog() }
 }

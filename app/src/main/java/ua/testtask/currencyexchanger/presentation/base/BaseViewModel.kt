@@ -24,6 +24,8 @@ abstract class BaseViewModel : ViewModel() {
 
     protected val scope by lazy(LazyThreadSafetyMode.NONE) { viewModelScope }
 
+    protected val alertDialogMutableState = MutableStateFlow<UIState>(UIState.Progress())
+    val alertDialogState by lazy(LazyThreadSafetyMode.NONE) { alertDialogMutableState.asStateFlow() }
     protected val mutableState = MutableStateFlow<UIState>(UIState.Progress())
     val state by lazy(LazyThreadSafetyMode.NONE) { mutableState.asStateFlow() }
 
@@ -35,4 +37,8 @@ abstract class BaseViewModel : ViewModel() {
         scope.launch(context + coroutineExceptionHandler, start, block)
 
     protected abstract fun onFailure(cause: Throwable)
+
+    fun onDismissDialog() {
+        alertDialogMutableState.tryEmit(UIState.Progress())
+    }
 }

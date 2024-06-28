@@ -1,6 +1,13 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <string name="app_name">Currency Exchanger</string>
+
+    <!-- Common -->
+
+    <string name="cancel" tools:ignore="ButtonCase">CANCEL</string>
+    <string name="ok">OK</string>
+    <string name="edit">EDIT</string>
+    <string name="enter_amount_hint">Enter amount</string>
 
     <!-- Main -->
 
@@ -10,8 +17,15 @@
     <string name="main_exchange_title">CURRENCY EXCHANGE</string>
     <string name="main_exchange_sell">Sell</string>
     <string name="main_exchange_receive">Receive</string>
-    <string name="main_exchange_value_pattern">%1$.02f</string>
-    <string name="main_exchange_value_plus_pattern">+%1$.02f</string>
+    <string name="main_exchange_dialog_hint">Enter amount</string>
+
     <string name="main_action_button">SUBMIT</string>
+    <string name="main_action_dialog_title">Currency converted</string>
+    <string name="main_action_dialog_text_pattern">
+        You have converted %1$.02f %2$s to %3$.02f %4$s.
+    </string>
+    <string name="main_action_dialog_text_with_commission_pattern">
+        You have converted %1$.02f %2$s to %3$.02f %4$s. Commission Fee: %5$.02f %2$s.
+    </string>
 
 </resources>

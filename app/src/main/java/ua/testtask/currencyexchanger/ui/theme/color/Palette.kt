@@ -9,9 +9,11 @@ import androidx.compose.ui.graphics.Color
 
     const val WHITE_LONG = 0xFFFFFFFF
     val WHITE = Color(WHITE_LONG)
+    val WHITE_DISABLE = Color(0x99FFFFFF)
 
     val BLACK_DARK = Color(0xFF111928)
     val BLACK_LIGHT = Color(0xFF1f2a37)
+    val BLACK_LIGHT_DISABLE = Color(0x771f2a37)
 
     val GRAY = Color(0xFF6b7280)
 
