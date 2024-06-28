@@ -1,5 +1,6 @@
 package ua.testtask.currencyexchanger.ui.theme.color
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ColorScheme
@@ -11,10 +12,11 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import ua.testtask.currencyexchanger.ui.component.button.ButtonComponent
 import ua.testtask.currencyexchanger.ui.theme.RootTheme
 
 val AppColorScheme: ColorScheme = darkColorScheme(
-    primary = Palette.BLUE_LIGHT,
+    primary = Palette.BLUE_DARK,
     onPrimary = Palette.WHITE,
     primaryContainer = Palette.BLUE_LIGHT,
     onPrimaryContainer = Palette.WHITE,
@@ -68,7 +70,12 @@ private fun RootThemePreview() {
             },
             modifier = Modifier.fillMaxSize(),
         ) {
-            Text(text = "Hello World", modifier = Modifier.padding(it))
+            Column {
+                Text(text = "Hello World", modifier = Modifier.padding(it))
+
+                ButtonComponent(text = "Hmm...") {}
+                ButtonComponent(text = "Hmm...", isEnabled = false) {}
+            }
         }
     }
 }

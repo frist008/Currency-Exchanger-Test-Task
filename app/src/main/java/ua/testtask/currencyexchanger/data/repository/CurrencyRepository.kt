@@ -8,12 +8,10 @@ interface CurrencyRepository {
 
     fun getWallets(): Flow<List<WalletDomainEntity>>
 
-    suspend fun getPriceOfCurrencies(baseCurrency: String? = null): Map<String, CurrencyDomainEntity>
+    suspend fun getPriceOfCurrencies(
+        baseCurrency: String? = null,
+        force: Boolean = false,
+    ): Flow<Map<String, CurrencyDomainEntity>>
 
-    suspend fun updateWallet(
-        priceOfCurrencies: Map<String, CurrencyDomainEntity>,
-        base: WalletDomainEntity,
-        target: WalletDomainEntity,
-        sum: Float,
-    )
+    suspend fun updateWallet(base: WalletDomainEntity, target: WalletDomainEntity)
 }
