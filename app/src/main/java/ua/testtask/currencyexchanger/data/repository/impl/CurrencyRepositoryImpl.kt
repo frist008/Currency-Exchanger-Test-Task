@@ -1,6 +1,5 @@
 package ua.testtask.currencyexchanger.data.repository.impl
 
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,6 +9,7 @@ import ua.testtask.currencyexchanger.data.database.dao.WalletDAO
 import ua.testtask.currencyexchanger.data.database.entity.WalletDBO
 import ua.testtask.currencyexchanger.data.network.api.AppApi
 import ua.testtask.currencyexchanger.data.repository.CurrencyRepository
+import ua.testtask.currencyexchanger.data.source.TaxStore
 import ua.testtask.currencyexchanger.domain.entity.CurrencyDomainEntity
 import ua.testtask.currencyexchanger.domain.entity.WalletDomainEntity
 import ua.testtask.currencyexchanger.domain.entity.WalletEntity
@@ -20,6 +20,7 @@ import javax.inject.Inject
 class CurrencyRepositoryImpl @Inject constructor(
     private val api: AppApi,
     private val walletDAO: WalletDAO,
+    private val taxStore: TaxStore,
 ) : CurrencyRepository {
 
     private val priceOfCurrenciesState = MutableStateFlow(emptyMap<String, CurrencyDomainEntity>())
@@ -46,7 +47,7 @@ class CurrencyRepositoryImpl @Inject constructor(
             // val dto = api.getCurrencies(baseCurrency)
 
             coroutineScope {
-                launch(Dispatchers.IO) { walletDAO.insertAll(dto.toDBOList()) }
+                launch { walletDAO.insertAll(dto.toDBOList()) }
 
                 priceOfCurrenciesState.emit(dto.toDomainMap())
             }
@@ -55,7 +56,10 @@ class CurrencyRepositoryImpl @Inject constructor(
         return priceOfCurrenciesState
     }
 
-    override suspend fun updateWallet(base: WalletDomainEntity, target: WalletDomainEntity) {
-        walletDAO.update(base.toDBO(), target.toDBO())
-    }
+    override suspend fun updateWallet(base: WalletDomainEntity, target: WalletDomainEntity): Float =
+        taxStore.consume().apply {
+            walletDAO.update(base.toDBO(), target.toDBO())
+        }
+
+    override fun getTaxCoefficient() = taxStore.getTaxCoefficient()
 }

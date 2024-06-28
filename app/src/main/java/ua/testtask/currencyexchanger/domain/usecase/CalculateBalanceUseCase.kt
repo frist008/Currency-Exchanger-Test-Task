@@ -11,22 +11,23 @@ class CalculateBalanceUseCase @Inject constructor(
 
     suspend fun calc(base: WalletEntity, target: WalletEntity, sum: Float): Float {
         val priceOfCurrencies = repository.getPriceOfCurrencies().first()
+        val sumAfterTax = sum - sum * repository.getTaxCoefficient()
 
         val result = when {
             base.name == WalletEntity.DEFAULT_BASE_CURRENCY -> {
                 val buyPrice = priceOfCurrencies.getValue(target.name).buyPrice
-                sum * buyPrice
+                sumAfterTax * buyPrice
             }
 
             target.name == WalletEntity.DEFAULT_BASE_CURRENCY -> {
                 val sellPrice = priceOfCurrencies.getValue(base.name).sellPrice
-                sum / sellPrice
+                sumAfterTax / sellPrice
             }
 
             else -> {
                 val sellPrice = priceOfCurrencies.getValue(base.name).sellPrice
                 val buyPrice = priceOfCurrencies.getValue(target.name).buyPrice
-                sum / sellPrice * buyPrice
+                sumAfterTax / sellPrice * buyPrice
             }
         }
 

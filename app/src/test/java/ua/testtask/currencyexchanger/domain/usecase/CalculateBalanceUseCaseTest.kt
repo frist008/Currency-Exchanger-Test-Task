@@ -31,6 +31,7 @@ class CalculateBalanceUseCaseTest {
 
     private val repository: CurrencyRepository = mockk()
 
+    private val tax = 0.1f
     private val mockCurrencyName1 = "USD"
     private val mockCurrencyValue1 = 2f
     private val mockCurrencyName2 = "UAH"
@@ -57,6 +58,7 @@ class CalculateBalanceUseCaseTest {
         testClass = CalculateBalanceUseCase(repository = repository)
 
         coEvery { repository.getPriceOfCurrencies() } returns MutableStateFlow(mockDomainDtoMap)
+        coEvery { repository.getTaxCoefficient() } returns tax
     }
 
     @Test
@@ -64,9 +66,10 @@ class CalculateBalanceUseCaseTest {
         val base = mockWalletDomainEntity0.copy(balance = 100f)
         val target = mockWalletDomainEntity1.copy(balance = 200f)
         val sum = 60f
+        val sumAfterTax = sum - sum * tax
 
         runTest {
-            assertEquals(testClass.calc(base, target, sum), sum * mockCurrencyValue1)
+            assertEquals(testClass.calc(base, target, sum), sumAfterTax * mockCurrencyValue1)
         }
     }
 
@@ -75,9 +78,10 @@ class CalculateBalanceUseCaseTest {
         val base = mockWalletDomainEntity1.copy(balance = 200f)
         val target = mockWalletDomainEntity0.copy(balance = 100f)
         val sum = 60f
+        val sumAfterTax = sum - sum * tax
 
         runTest {
-            assertEquals(testClass.calc(base, target, sum), sum / mockCurrencyValue1)
+            assertEquals(testClass.calc(base, target, sum), sumAfterTax / mockCurrencyValue1)
         }
     }
 
@@ -86,12 +90,12 @@ class CalculateBalanceUseCaseTest {
         val base = mockWalletDomainEntity1.copy(balance = 200f)
         val target = mockWalletDomainEntity2.copy(balance = 300f)
         val sum = 60f
+        val sumAfterTax = sum - sum * tax
 
         runTest {
-            testClass.calc(base, target, sum)
             assertEquals(
                 testClass.calc(base, target, sum),
-                sum / mockCurrencyValue1 * mockCurrencyValue2,
+                sumAfterTax / mockCurrencyValue1 * mockCurrencyValue2,
             )
         }
     }
